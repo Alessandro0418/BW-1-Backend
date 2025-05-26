@@ -1,4 +1,6 @@
 package entities;
 
-public class StatoMezzo {
+public enum StatoMezzo {
+    IN_SERVIZIO,
+    IN_MANUTENZIONE
 }
