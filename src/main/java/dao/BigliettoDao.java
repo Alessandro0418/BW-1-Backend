@@ -1,6 +1,7 @@
 package dao;
 
 import entities.Biglietto;
+import entities.Mezzo;
 import entities.PuntoEmissione;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -26,6 +27,23 @@ public class BigliettoDao {
         return em.find(Biglietto.class, id);
     }
 
+    public void update(Biglietto b) {
+        em.getTransaction().begin();
+        em.merge(b);
+        em.getTransaction().commit();
+    }
+
+    public void delete(Biglietto b) {
+        em.getTransaction().begin();
+        em.remove(em.contains(b) ? b : em.merge(b));
+        em.getTransaction().commit();
+    }
+
+
+
+
+
+
     public List<Biglietto> getByPeriodo(LocalDate inizio, LocalDate fine) {
         TypedQuery<Biglietto> query = em.createQuery(
                 "SELECT b FROM Biglietto b WHERE b.dataDiEmissione BETWEEN :inizio AND :fine",
@@ -35,7 +53,7 @@ public class BigliettoDao {
                 .setParameter("fine", fine)
                 .getResultList();
     }
-
+        //trova punto emissione del biglietto
     public List<Biglietto> findByPuntoEmissione(PuntoEmissione pe) {
         return em.createQuery(
                         "SELECT b FROM Biglietto b WHERE b.puntoEmissione = :pe",
@@ -45,23 +63,57 @@ public class BigliettoDao {
                 .getResultList();
     }
 
-    public List<Biglietto> findByPeriodoAndPuntoEmissione(LocalDate startDate, LocalDate endDate, PuntoEmissione pe) {
+        //trova periodo e data di emissione del biglietto
+    public List<Biglietto> findByPeriodoAndPuntoEmissione(LocalDate inizio, LocalDate fine, PuntoEmissione pe) {
         return em.createQuery(
-                        "SELECT b FROM Biglietto b WHERE b.dataDiEmissione BETWEEN :startDate AND :endDate AND b.puntoEmissione = :pe",
+                        "SELECT b FROM Biglietto b WHERE b.dataDiEmissione BETWEEN :inizio AND :fine AND b.puntoEmissione = :pe",
                         Biglietto.class
                 )
-                .setParameter("startDate", startDate)
-                .setParameter("endDate", endDate)
+                .setParameter("inizio", inizio)
+                .setParameter("fine", fine)
                 .setParameter("pe", pe)
                 .getResultList();
     }
 
+
+        //emissione biglietto
     public void emettiBiglietto(PuntoEmissione pe){
         Biglietto b = new Biglietto();
         b.setPuntoEmissione(pe);
         b.setDataDiEmissione(LocalDate.now());
         b.setVidimato(false);
         save(b);
+
+    }
+
+
+        //conta biglietti convalidati in un determinato periodo
+    public long countBigliettiVidimatiNelPeriodo(LocalDate inizio, LocalDate fine){
+        return em.createQuery("SELECT COUNT (b) FROM Biglietto b WHERE b.vidimato = true BETWEEN :inizio AND :fine", Long.class)
+                .setParameter("inizio", inizio)
+                .setParameter("fine", fine)
+                .getSingleResult();
+
+    }
+        //conta biglietti convalidati per Mezzo per un determinato periodo
+    public long countBigliettiVidimatiPerMezzoNelPeriodo(LocalDate inizio, LocalDate fine){
+        return em.createQuery("SELECT COUNT (B) FROM Biglietto b WHERE b.vidimato = true AND b.mezzoVidimazione BETWEEN :inizio AND :fine" , Long.class)
+                .setParameter("inizio", inizio)
+                .setParameter("fine", fine)
+                .getSingleResult();
+    }
+
+        //convalida biglietto
+
+    public void vidimaBiglietto (long id, Mezzo mezzo){
+        Biglietto b = getById(id);
+        if(b != null && !b.isVidimato()){
+            em.getTransaction().begin();
+            b.setVidimato(true);
+            b.setMezzoVidimazione(mezzo);
+            em.merge(b);
+            em.getTransaction().commit();
+        }
 
     }
 
