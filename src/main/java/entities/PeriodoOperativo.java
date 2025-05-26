@@ -1,12 +1,24 @@
 package entities;
 
 import java.time.LocalDate;
+import jakarta.persistence.*;
 
+@Entity
 public class PeriodoOperativo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "mezzo_id")
     private Mezzo mezzo;
+
+
     private LocalDate dataInizio;
     private LocalDate dataFine;
+
+    @Enumerated(EnumType.STRING)
     private StatoMezzo stato;
 
     //Costruttore JPA
