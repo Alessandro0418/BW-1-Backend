@@ -17,9 +17,7 @@ public class Mezzo {
     private List<VidimazioneBiglietti> vidimazioni = new ArrayList<>();
 
     //Costruttori
-    public Mezzo(){
-
-    }
+    public Mezzo(){}
 
     public Mezzo(int capienza, TipoMezzo tipo) {
         this.capienza = capienza;
