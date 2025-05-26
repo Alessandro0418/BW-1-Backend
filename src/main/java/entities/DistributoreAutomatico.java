@@ -1,8 +1,10 @@
 package entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
+
 public class DistributoreAutomatico extends PuntoEmissione {
 
     private boolean servizio = true; // true = attivo, false = fuori servizio
