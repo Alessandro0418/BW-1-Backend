@@ -29,27 +29,5 @@ public class Mezzo {
 
     //Getter e setter
 
-    public long getId() {
-        return id;
-    }
 
-    public int getCapienza() {
-        return capienza;
-    }
-
-    public StatoMezzo getStatoAttuale() {
-        return statoAttuale;
-    }
-
-    public List<PeriodoOperativo> getPeriodiOperativi() {
-        return periodiOperativi;
-    }
-
-    public List<VidimazioneBiglietti> getVidimazioni() {
-        return vidimazioni;
-    }
-
-    public TipoMezzo getTipo() {
-        return tipo;
-    }
 }
