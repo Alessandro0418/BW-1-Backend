@@ -53,7 +53,7 @@ public class BigliettoDao {
                 .setParameter("fine", fine)
                 .getResultList();
     }
-        //trova punto emissione del biglietto
+        //Trova tutti i biglietti emessi da un determinato punto di emissione (PuntoEmissione)
     public List<Biglietto> findByPuntoEmissione(PuntoEmissione pe) {
         return em.createQuery(
                         "SELECT b FROM Biglietto b WHERE b.puntoEmissione = :pe",
@@ -63,7 +63,7 @@ public class BigliettoDao {
                 .getResultList();
     }
 
-        //trova periodo e data di emissione del biglietto
+    // Trova tutti i biglietti emessi in un dato intervallo di tempo da un determinato punto di emissione
     public List<Biglietto> findByPeriodoAndPuntoEmissione(LocalDate inizio, LocalDate fine, PuntoEmissione pe) {
         return em.createQuery(
                         "SELECT b FROM Biglietto b WHERE b.dataDiEmissione BETWEEN :inizio AND :fine AND b.puntoEmissione = :pe",
@@ -104,7 +104,6 @@ public class BigliettoDao {
     }
 
         //convalida biglietto
-
     public void vidimaBiglietto (long id, Mezzo mezzo){
         Biglietto b = getById(id);
         if(b != null && !b.isVidimato()){

@@ -41,7 +41,7 @@ public class PuntoEmissioneDao {
 
 
     // trova distributori attivi
-    public List<DistributoreAutomatico> findDistributoreAttivo(DistributoreAutomatico da) {
+    public List<DistributoreAutomatico> findDistributore(DistributoreAutomatico da) {
         return em.createQuery(
                         "SELECT da FROM DistributoreAutomatico da WHERE da.servizio = true = :da",
                         DistributoreAutomatico.class
