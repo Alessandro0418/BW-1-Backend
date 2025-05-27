@@ -14,23 +14,24 @@ public class Utente {
 
     @Column (length = 20)
     private String nome;
+    private String nomeUtente;
+    private String password;
 
     private String tipo;
 
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL)
     private List<Tessera> tessere = new ArrayList<>();
 
-    public Utente(int id, String nome, String tipo, List<Tessera> tessere) {
+    public Utente(int id, String nome, String nomeUtente, String password, String tipo, List<Tessera> tessere) {
         this.id = id;
         this.nome = nome;
+        this.nomeUtente = nomeUtente;
+        this.password = password;
         this.tipo = tipo;
         this.tessere = tessere;
     }
 
     public Utente() {
-    }
-
-    public Utente(String nome) {
     }
 
     public int getId() {
@@ -47,6 +48,22 @@ public class Utente {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getNomeUtente() {
+        return nomeUtente;
+    }
+
+    public void setNomeUtente(String nomeUtente) {
+        this.nomeUtente = nomeUtente;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getTipo() {
@@ -70,6 +87,8 @@ public class Utente {
         return "Utente{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
+                ", nomeUtente='" + nomeUtente + '\'' +
+                ", password='" + password + '\'' +
                 ", tipo='" + tipo + '\'' +
                 ", tessere=" + tessere +
                 '}';
