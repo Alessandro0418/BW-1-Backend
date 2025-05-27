@@ -3,6 +3,8 @@ package entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo")
@@ -12,6 +14,8 @@ public abstract class PuntoEmissione {
     @GeneratedValue
     private Long id;
     private String nome;
+    @OneToMany(mappedBy = "puntoEmissione")
+    private List<Biglietto> biglietti;
 
     public PuntoEmissione() {
     }
@@ -36,11 +40,20 @@ public abstract class PuntoEmissione {
         this.nome = nome;
     }
 
+    public List<Biglietto> getBiglietti() {
+        return biglietti;
+    }
+
+    public void setBiglietti(List<Biglietto> biglietti) {
+        this.biglietti = biglietti;
+    }
+
     @Override
     public String toString() {
         return "PuntoEmissione{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
+                ", biglietti=" + biglietti +
                 '}';
     }
 }
