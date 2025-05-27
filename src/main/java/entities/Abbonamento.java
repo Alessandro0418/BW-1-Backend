@@ -34,6 +34,10 @@ public class Abbonamento {
         this.id = id;
     }
 
+    public Abbonamento() {
+
+    }
+
     public int getId() {
         return id;
     }

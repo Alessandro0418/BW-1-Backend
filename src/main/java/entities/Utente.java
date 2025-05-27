@@ -30,6 +30,9 @@ public class Utente {
     public Utente() {
     }
 
+    public Utente(String nome) {
+    }
+
     public int getId() {
         return id;
     }
