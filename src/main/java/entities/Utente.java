@@ -16,18 +16,20 @@ public class Utente {
     private String nome;
     private String nomeUtente;
     private String password;
+    private String ruolo;
 
     private String tipo;
 
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL)
     private List<Tessera> tessere = new ArrayList<>();
 
-    public Utente(int id, String nome, String nomeUtente, String password, String tipo, List<Tessera> tessere) {
+    public Utente(int id, String nome, String nomeUtente, String password, String tipo, String ruolo, List<Tessera> tessere) {
         this.id = id;
         this.nome = nome;
         this.nomeUtente = nomeUtente;
         this.password = password;
         this.tipo = tipo;
+        this.ruolo = ruolo;
         this.tessere = tessere;
     }
 
@@ -66,6 +68,14 @@ public class Utente {
         this.password = password;
     }
 
+    public String getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(String ruolo) {
+        this.ruolo = ruolo;
+    }
+
     public String getTipo() {
         return tipo;
     }
@@ -89,6 +99,7 @@ public class Utente {
                 ", nome='" + nome + '\'' +
                 ", nomeUtente='" + nomeUtente + '\'' +
                 ", password='" + password + '\'' +
+                ", ruolo='" + ruolo + '\'' +
                 ", tipo='" + tipo + '\'' +
                 ", tessere=" + tessere +
                 '}';

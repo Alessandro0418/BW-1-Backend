@@ -6,45 +6,38 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("postgres");
+    private static final EntityManager em = emf.createEntityManager();
 
     public static void main(String[] args) {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("postgres");
+        while (true) {
+            System.out.println("Seleziona un'opzione:");
+            System.out.println("1. Login");
+            System.out.println("2. Registrati");
+            String scelta = scanner.nextLine();
 
-    EntityManager entityManager = emf.createEntityManager();
-        EntityManager em = emf.createEntityManager();
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Seleziona un opzione:");
-        System.out.println("1. Login");
-        System.out.println("2. Registrati");
-        String scelta = scanner.nextLine();
-
-
-        switch (scelta) {
-            case "1" :
-                System.out.println("Nome Utente ");
-                String nomeUtente = scanner.nextLine();
-                System.out.println("password");
-                String password = scanner.nextLine();
-                public String datiUtente(nomeUtente, password){
-                    em.createQuery("SELECT COUNT(u) FROM Utente u WHERE u.nome = :nome", Utente.class)
-                            .setParameter("nomeUtente", nomeUtente)
-                            .setParameter("password", password)
-                            .getSingleResult();
+            switch (scelta) {
+                case "1":
+                    Utente utenteLoggato = login();
+                    if (utenteLoggato != null) {
+                        mostraMenuPerRuolo(utenteLoggato);
+                    }
+                    break;
+                case "2":
+                    registrazione();
+                    break;
+                default:
+                    System.out.println("Scelta non valida");
             }
-
-                if (query.getSingleResult() > 0) {
-                    System.out.println("Nome utente già in uso.");
-                    return null;
-                }
         }
-
-
     }
+
+    //implementare metodo login(),mostraMenuPerRuolo, Registrazione()
 }
