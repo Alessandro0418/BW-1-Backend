@@ -27,7 +27,7 @@ public class Main {
                 case "1":
                     Utente utenteLoggato = login();
                     if (utenteLoggato != null) {
-                        mostraMenuPerRuolo(utenteLoggato);
+                        mostraMenuPerTipo(utenteLoggato);
                     }
                     break;
                 case "2":
@@ -58,7 +58,7 @@ public class Main {
         }
     }
 
-    //implementare metodo login(),mostraMenuPerRuolo, Registrazione()
+    //implementare metodo login(),mostraMenuPerTipo, Registrazione()
 
 
 }
