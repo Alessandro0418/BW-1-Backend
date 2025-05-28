@@ -1,4 +1,6 @@
-package Roberto;
+package dao;
+import entities.Tratta;
+import entities.TrattaPercorsa;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 
