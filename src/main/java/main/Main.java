@@ -38,6 +38,45 @@ public class Main {
             }
         }
     }
+    
+    public static void mostraMenuPerTipo(Utente utente) {
+        if (utente.getTipoUtente().equalsIgnoreCase("admin")) {
+            System.out.println("Benvenuto Admin " + utente.getNomeUtente() + ". Il menu admin sarà disponibile presto.");
+        } else {
+            System.out.println("Benvenuto " + utente.getNomeUtente());
+
+            while (true) {
+                System.out.println("\nMenu Utente:");
+                System.out.println("1. Crea una tessera");
+                System.out.println("2. Crea un abbonamento");
+                System.out.println("3. Crea una tratta");
+                System.out.println("4. Vidima un biglietto su un mezzo");
+                System.out.println("5. Logout");
+
+                String sceltaUtente = scanner.nextLine();
+
+                switch (sceltaUtente) {
+                    case "1":
+                        creaTessera(utente);
+                        break;
+                    case "2":
+                        emettiAbbonamento(utente);
+                        break;
+                    case "3":
+                        creaTratta();
+                        break;
+                    case "4":
+                        vidimazioneBiglietti(utente);
+                        break;
+                    case "5":
+                        System.out.println("Logout effettuato.");
+                        return;
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+            }
+        }
+    }
 
     public static Utente login(){
         System.out.println("Nome Utente: ");
