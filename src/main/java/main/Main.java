@@ -1,5 +1,6 @@
 package main;
 
+import entities.Biglietto;
 import entities.PuntoEmissione;
 import service.PuntoEmissioneService;
 import entities.Utente;
@@ -104,9 +105,10 @@ public class Main {
         List<PuntoEmissione> puntiEmissione = puntoEmissioneService.findAll();
 
         int i = 0;
-        System.out.print("Scegliere distribnutire:");
+        System.out.print("Scegliere punto emissione: ");
         for (PuntoEmissione puntoEmissione : puntiEmissione) {
-            System.out.print(i + ": "+puntoEmissione.getNome());
+            System.out.print(i + ": " + puntoEmissione.getNome());
+            i++;
         }
 
         String puntoEmissione = scanner.nextLine();
@@ -119,10 +121,32 @@ public class Main {
             // inserisci opzioni admin qui
         } else {
             System.out.println("MENU UTENTE");
-            // inserisci opzioni utente semplice qui
 
-            PuntoEmissioneService puntoEmissioneService1 = new PuntoEmissioneService(em);
-            puntoEmissioneService1.emettiBiglietto(puntoEmissioneScelto);
+            while (true) {
+                System.out.println("--- MENU UTENTE ---");
+                System.out.println("1. Acquista biglietto");
+                System.out.println("2. Acquista abbonamento");
+                System.out.println("3. Verifica validità abbonamento");
+                System.out.println("4. Richiedi o rinnova tessera");
+                System.out.println("0. Esci");
+                System.out.print("Scelta: ");
+                String scelta = scanner.nextLine();
+
+
+                switch (scelta) {
+                    case "1":
+                        PuntoEmissioneService puntoEmissioneService1 = new PuntoEmissioneService(em);
+                        Biglietto biglietto = puntoEmissioneService1.emettiBiglietto(puntoEmissioneScelto);
+                        System.out.println("Biglietto emesso con successo!");
+                        System.out.println("ID: " + biglietto.getId() + ", Data: " + biglietto.getDataDiEmissione());
+                        break;
+
+                    case "2":
+
+
+
+                }
+            }
         }
     }
 }

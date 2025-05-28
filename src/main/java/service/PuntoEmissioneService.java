@@ -1,5 +1,6 @@
 package service;
 
+import dao.BigliettoDao;
 import dao.PuntoEmissioneDao;
 import entities.Biglietto;
 import entities.PuntoEmissione;
@@ -16,13 +17,20 @@ public class PuntoEmissioneService {
         this.em = em;
     }
 
-    public List<PuntoEmissione> findAll(){
-        PuntoEmissioneDao puntoEmissioneDao= new PuntoEmissioneDao(em);
+    public List<PuntoEmissione> findAll() {
+        PuntoEmissioneDao puntoEmissioneDao = new PuntoEmissioneDao(em);
         return puntoEmissioneDao.findAll();
-
     }
 
-    public Biglietto emettiBiglietto(PuntoEmissione puntoEmissione){
-        return new Biglietto(LocalDate.now(), null,false, puntoEmissione);
+    public Biglietto emettiBiglietto(PuntoEmissione puntoEmissione) {
+        Biglietto biglietto = new Biglietto();
+        biglietto.setDataDiEmissione(LocalDate.now());
+        biglietto.setVidimato(false);
+        biglietto.setPuntoEmissione(puntoEmissione);
+
+        BigliettoDao bigliettoDao = new BigliettoDao(em);
+        bigliettoDao.save(biglietto);
+
+        return biglietto;
     }
 }
