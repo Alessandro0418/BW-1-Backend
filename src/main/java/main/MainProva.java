@@ -9,6 +9,7 @@ import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class Main {
 
@@ -177,7 +178,7 @@ public class Main {
         Long id = Long.parseLong(scanner.nextLine());
 
         System.out.print("Nuovo stato (IN_SERVIZIO / IN_MANUTENZIONE): ");
-        String stato = scanner.nextLine().toUpperCase();
+        String statoInput = scanner.nextLine().toUpperCase();
 
         em.getTransaction().begin();
         try {
@@ -187,14 +188,41 @@ public class Main {
                 em.getTransaction().rollback();
                 return;
             }
-            mezzo.setStatoAttuale(StatoMezzo.valueOf(stato));
+
+            StatoMezzo nuovoStato = StatoMezzo.valueOf(statoInput);
+
+            //Chiudere periodo operativo
+            TypedQuery<PeriodoOperativo> query = em.createQuery(
+                    "SELECT p FROM PeriodoOperativo p WHERE p.mezzo = :mezzo AND p.dataFine IS NULL",
+                    PeriodoOperativo.class
+            );
+            query.setParameter("mezzo", mezzo);
+            List<PeriodoOperativo> periodiAperti = query.getResultList();
+
+            if (!periodiAperti.isEmpty()) {
+                PeriodoOperativo corrente = periodiAperti.get(0);
+                corrente.setDataFine(LocalDate.now());
+            }
+
+            //Crea nuovo periodo
+            PeriodoOperativo nuovoPeriodo = new PeriodoOperativo();
+            nuovoPeriodo.setMezzo(mezzo);
+            nuovoPeriodo.setStato(nuovoStato);
+            nuovoPeriodo.setDataInizio(LocalDate.now());
+
+            em.persist(nuovoPeriodo);
+
+            //Aggiorna stato
+            mezzo.setStatoAttuale(nuovoStato);
+
             em.getTransaction().commit();
-            System.out.println("Stato aggiornato.");
+            System.out.println("Stato del mezzo aggiornato e periodo registrato.");
         } catch (Exception e) {
             em.getTransaction().rollback();
-            System.out.println("Errore: " + e.getMessage());
+            System.out.println("Errore durante il cambio di stato: " + e.getMessage());
         }
     }
+
 
 
     //Visualizza mezzi in servizio
