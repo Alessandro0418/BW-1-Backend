@@ -1,4 +1,4 @@
-package entities;
+package Enumeration;
 
 public enum StatoMezzo {
     IN_SERVIZIO,
