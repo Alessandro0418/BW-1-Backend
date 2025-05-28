@@ -1,5 +1,6 @@
 package entities;
 
+import Enumeration.TipoUtente;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -18,23 +19,32 @@ public class Utente {
     private String password;
 
 
-    private String tipo;
+    private TipoUtente tipoUtente;
 
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL)
     private List<Tessera> tessere = new ArrayList<>();
 
-    public Utente(int id, String nome, String nomeUtente, String password, String tipo, List<Tessera> tessere) {
-        this.id = id;
+
+    public Utente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente, List<Tessera> tessere) {
         this.nome = nome;
         this.nomeUtente = nomeUtente;
         this.password = password;
-        this.tipo = tipo;
+        this.tipoUtente = tipoUtente;
+        this.tessere = tessere;
+    }
 
+    public Utente(String nome, String nomeUtente, String password, TipoUtente tipoUtente, List<Tessera> tessere) {
+        this.nome = nome;
+        this.nomeUtente = nomeUtente;
+        this.password = password;
+        this.tipoUtente = tipoUtente;
         this.tessere = tessere;
     }
 
     public Utente() {
     }
+
+
 
     public int getId() {
         return id;
@@ -68,14 +78,12 @@ public class Utente {
         this.password = password;
     }
 
-
-
-    public String getTipo() {
-        return tipo;
+    public TipoUtente getTipoUtente() {
+        return tipoUtente;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoUtente(TipoUtente tipoUtente) {
+        this.tipoUtente = tipoUtente;
     }
 
     public List<Tessera> getTessere() {
@@ -93,7 +101,7 @@ public class Utente {
                 ", nome='" + nome + '\'' +
                 ", nomeUtente='" + nomeUtente + '\'' +
                 ", password='" + password + '\'' +
-                ", tipo='" + tipo + '\'' +
+                ", tipoUtente='" + tipoUtente + '\'' +
                 ", tessere=" + tessere +
                 '}';
     }

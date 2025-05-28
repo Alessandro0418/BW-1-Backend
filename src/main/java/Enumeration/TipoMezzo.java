@@ -1,4 +1,4 @@
-package entities;
+package Enumeration;
 
 public enum TipoMezzo {
     TRAM,

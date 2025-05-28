@@ -1,5 +1,7 @@
 package entities;
 
+import Enumeration.TipoUtente;
+import dao.UtenteDAO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -15,13 +17,26 @@ public class GestioneUtentiService {
         this.em = em;
     }
 
-    public Utente creaUtente(String nome) {
-        Utente u = new Utente(nome);
+    public Utente creaUtente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente,List <Tessera> tessere) {
+        Utente u = new Utente(id,nome,nomeUtente,password,tipoUtente, tessere);
         em.getTransaction().begin();
         em.persist(u);
         em.getTransaction().commit();
         return u;
     }
+
+    public void salvaUtente(Utente utente) {
+        UtenteDAO utenteDAO = new UtenteDAO(em);
+        utenteDAO.salva(utente);
+    }
+
+
+    public Utente getUtenteByNomeUtente(String nomeUtente){
+        UtenteDAO dao = new UtenteDAO(em);
+        return dao.getUtenteByNomeUtente(nomeUtente);
+    }
+
+
 
     public Tessera creaTessera(Utente utente) {
         Tessera tessera = new Tessera();
@@ -72,5 +87,27 @@ public class GestioneUtentiService {
         } catch (NoResultException e) {
             return false;
         }
+    }
+
+    public Utente login(String nomeUtente, String password) {
+        Utente utente = getUtenteByNomeUtente(nomeUtente);
+
+        if (utente == null || !utente.getPassword().equals(password)) {
+            return null; // login fallito
+        }
+
+        return utente; // login riuscito
+    }
+
+    public Utente registraNuovoUtente(String nome, String nomeUtente, String password, TipoUtente tipoUtente) {
+        Utente esistente = getUtenteByNomeUtente(nomeUtente);
+
+        if (esistente != null) {
+            throw new RuntimeException("Nome utente già in uso.");
+        }
+
+        Utente nuovo = new Utente(nome, nomeUtente, password, tipoUtente, null);
+        salvaUtente(nuovo);
+        return nuovo;
     }
 }
