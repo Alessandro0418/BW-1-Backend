@@ -99,14 +99,14 @@ public class GestioneUtentiService {
         return utente; // login riuscito
     }
 
-    public Utente registraNuovoUtente(String nome, String nomeUtente, String password, TipoUtente tipoUtente) {
+    public Utente registraNuovoUtente(String nome, String nomeUtente, String password) {
         Utente esistente = getUtenteByNomeUtente(nomeUtente);
 
         if (esistente != null) {
             throw new RuntimeException("Nome utente già in uso.");
         }
 
-        Utente nuovo = new Utente(nome, nomeUtente, password, tipoUtente, null);
+        Utente nuovo = new Utente(nome, nomeUtente, password, TipoUtente.USER, null);
         salvaUtente(nuovo);
         return nuovo;
     }

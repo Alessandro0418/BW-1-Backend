@@ -81,15 +81,11 @@ public class Main {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        System.out.print("Tipo utente (USER/ADMIN): ");
-        String tipoUtenteInput = scanner.nextLine();
 
         try {
-            TipoUtente tipoUtente = TipoUtente.valueOf(tipoUtenteInput.toUpperCase());
-            Utente nuovo = servizio.registraNuovoUtente(nome, username, password, tipoUtente);
+            // Imposta automaticamente il tipo utente come USER
+            Utente nuovo = servizio.registraNuovoUtente(nome, username, password);
             System.out.println("Registrazione completata! Ora puoi fare il login.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Tipo utente non valido. Usa USER o ADMIN.");
         } catch (RuntimeException e) {
             System.out.println("Errore: " + e.getMessage());
             if (e.getMessage().contains("già in uso")) {
