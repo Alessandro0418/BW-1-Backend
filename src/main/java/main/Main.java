@@ -39,5 +39,26 @@ public class Main {
         }
     }
 
+    public static Utente login(){
+        System.out.println("Nome Utente: ");
+        String userName = scanner.nextLine();
+        System.out.println("password: ");
+        String pass = scanner.nextLine();
+
+        TypedQuery<Utente> query = em.createQuery("SELECT u FROM Utente u WHERE u.nomeUtente = :userName AND u.password = :pass", Utente.class)
+                .setParameter("userName", userName)
+                .setParameter("pass", pass);
+        List<Utente> risultati = query.getResultList();
+
+        if (risultati.isEmpty()) {
+            System.out.println("Utente non trovato o credenziali errate.");
+            return null;
+        } else {
+            return risultati.get(0);
+        }
+    }
+
     //implementare metodo login(),mostraMenuPerRuolo, Registrazione()
+
+
 }
