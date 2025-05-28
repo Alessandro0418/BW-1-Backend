@@ -77,7 +77,7 @@ public class BigliettoDao {
 
 
         //emissione biglietto
-    public void emettiBiglietto(PuntoEmissione pe){
+    public void salvaBiglietto(PuntoEmissione pe){
         Biglietto b = new Biglietto();
         b.setPuntoEmissione(pe);
         b.setDataDiEmissione(LocalDate.now());

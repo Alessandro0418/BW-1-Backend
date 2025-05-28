@@ -1,11 +1,14 @@
 package main;
 
-import Enumeration.TipoUtente;
+import entities.PuntoEmissione;
+import service.PuntoEmissioneService;
 import entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import entities.GestioneUtentiService;
+import service.GestioneUtentiService;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -96,12 +99,30 @@ public class Main {
     }
 
     private static void mostraMenuPerTipo(Utente utente) {
+
+        PuntoEmissioneService puntoEmissioneService = new PuntoEmissioneService(em);
+        List<PuntoEmissione> puntiEmissione = puntoEmissioneService.findAll();
+
+        int i = 0;
+        System.out.print("Scegliere distribnutire:");
+        for (PuntoEmissione puntoEmissione : puntiEmissione) {
+            System.out.print(i + ": "+puntoEmissione.getNome());
+        }
+
+        String puntoEmissione = scanner.nextLine();
+
+        PuntoEmissione puntoEmissioneScelto = puntiEmissione.get(Integer.parseInt(puntoEmissione));
+
+
         if (utente.getTipoUtente().name().equals("ADMIN")) {
             System.out.println("MENU ADMIN");
             // inserisci opzioni admin qui
         } else {
             System.out.println("MENU UTENTE");
             // inserisci opzioni utente semplice qui
+
+            PuntoEmissioneService puntoEmissioneService1 = new PuntoEmissioneService(em);
+            puntoEmissioneService1.emettiBiglietto(puntoEmissioneScelto);
         }
     }
 }

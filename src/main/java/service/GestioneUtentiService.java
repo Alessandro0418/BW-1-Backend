@@ -1,7 +1,11 @@
-package entities;
+package service;
 
 import Enumeration.TipoUtente;
 import dao.UtenteDAO;
+import entities.Abbonamento;
+import entities.Biglietto;
+import entities.Tessera;
+import entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -17,7 +21,7 @@ public class GestioneUtentiService {
         this.em = em;
     }
 
-    public Utente creaUtente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente,List <Tessera> tessere) {
+    public Utente creaUtente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente, List <Tessera> tessere) {
         Utente u = new Utente(id,nome,nomeUtente,password,tipoUtente, tessere);
         em.getTransaction().begin();
         em.persist(u);
@@ -110,4 +114,6 @@ public class GestioneUtentiService {
         salvaUtente(nuovo);
         return nuovo;
     }
+
+
 }
