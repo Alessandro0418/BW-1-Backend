@@ -1,4 +1,5 @@
-package Roberto;
+package dao;
+import entities.Tratta;
 import jakarta.persistence.EntityManager;
 
 public class TrattaDAO {

@@ -1,4 +1,4 @@
-package Roberto;
+package entities;
 
 import jakarta.persistence.*;
 
