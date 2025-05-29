@@ -3,7 +3,10 @@ package entities;
 import jakarta.persistence.Entity;
 
 @Entity
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 public class RivenditoreAutorizzato extends PuntoEmissione{
 
     private String indirizzo;
