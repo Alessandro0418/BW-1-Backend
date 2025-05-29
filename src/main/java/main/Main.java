@@ -24,7 +24,7 @@ public class Main {
         PuntoEmissioneService pes = new PuntoEmissioneService(em);
         pes.inizializzaPuntiEmissione();
 
-        
+
         while (true) {
             System.out.println("Benvenuto!");
             System.out.println("1. Login");
@@ -189,12 +189,7 @@ public class Main {
                     default:
                         System.out.println("Scelta non valida.");
                 }
-
-
-
-
-
-                }
             }
         }
     }
+}

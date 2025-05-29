@@ -58,7 +58,6 @@ public class PuntoEmissioneService {
 
     public void inizializzaPuntiEmissione() {
         if (findAll().isEmpty()) {
-            em.getTransaction().begin();
 
             DistributoreAutomatico d = new DistributoreAutomatico();
             d.setNome("Distributore Centrale");
@@ -72,7 +71,6 @@ public class PuntoEmissioneService {
             dao.save(d);
             dao.save(r);
 
-            em.getTransaction().commit();
 
             System.out.println("Punti di emissione inizializzati.");
         }
