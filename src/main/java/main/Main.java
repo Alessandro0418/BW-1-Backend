@@ -136,7 +136,7 @@ public class Main {
         int i = 0;
         System.out.print("Scegliere punto emissione attivi/in servizio : ");
         for (PuntoEmissione puntoEmissione : puntiEmissione) {
-            System.out.print(i + ": " + puntoEmissione.getNome());
+            System.out.print(i + ": " + puntoEmissione.getNome() + " ");
             i++;
         }
 
