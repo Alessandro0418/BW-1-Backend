@@ -56,27 +56,7 @@ public class GestioneUtentiService {
         return tessera;
     }
 
-    public Abbonamento emettiAbbonamento(Tessera tessera, String tipo) {
-        Abbonamento abbonamento = new Abbonamento();
-        abbonamento.setTipo(tipo);
-        abbonamento.setDataInizio(LocalDate.now());
 
-        if (tipo.equalsIgnoreCase("settimanale")) {
-            abbonamento.setDataFine(LocalDate.now().plusWeeks(1));
-        } else if (tipo.equalsIgnoreCase("mensile")) {
-            abbonamento.setDataFine(LocalDate.now().plusMonths(1));
-        } else {
-            throw new IllegalArgumentException("Tipo abbonamento non valido");
-        }
-
-        abbonamento.setTessera(tessera);
-
-        em.getTransaction().begin();
-        em.persist(abbonamento);
-        em.getTransaction().commit();
-
-        return abbonamento;
-    }
 
     public boolean isAbbonamentoValido(String numeroTessera) {
         try {
