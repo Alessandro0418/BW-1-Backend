@@ -34,4 +34,11 @@ public class TesseraDao {
                 .setParameter("utente", utente)
                 .getSingleResult();
     }
+
+    public void rinnovaTessera(Tessera tessera) {
+        em.getTransaction().begin();
+        tessera.rinnova();
+        em.merge(tessera);
+        em.getTransaction().commit();
+    }
 }

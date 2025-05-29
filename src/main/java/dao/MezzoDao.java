@@ -12,6 +12,8 @@ public class MezzoDao {
         this.em = em;
     }
 
+
+
     public void salva(Mezzo mezzo){
         em.getTransaction().begin();
         em.persist(mezzo);

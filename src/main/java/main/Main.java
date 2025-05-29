@@ -1,6 +1,10 @@
 package main;
 
 import Enumeration.TipoAbbonamento;
+import Enumeration.TipoMezzo;
+import dao.BigliettoDao;
+import dao.MezzoDao;
+import dao.TesseraDao;
 import entities.*;
 import service.PuntoEmissioneService;
 import jakarta.persistence.EntityManager;
@@ -17,13 +21,29 @@ public class Main {
     private static final EntityManager em = emf.createEntityManager();
     private static final Scanner scanner = new Scanner(System.in);
     private static final GestioneUtentiService servizio = new GestioneUtentiService(em);
+    private static TesseraDao tesseraDao;
+    private static BigliettoDao bigliettoDao;
+    private static MezzoDao mezzoDao;
+
 
 
 
     public static void main(String[] args) {
         PuntoEmissioneService pes = new PuntoEmissioneService(em);
         pes.inizializzaPuntiEmissione();
+        tesseraDao = new TesseraDao(em);
+        bigliettoDao = new BigliettoDao(em);
+        mezzoDao = new MezzoDao(em);
 
+        MezzoDao mezzoDao = new MezzoDao(em);
+
+        Mezzo tram = new Mezzo();
+        tram.setTipo(TipoMezzo.TRAM);
+        mezzoDao.salva(tram);
+
+        Mezzo autobus = new Mezzo();
+        autobus.setTipo(TipoMezzo.AUTOBUS);
+        mezzoDao.salva(autobus);
 
         while (true) {
             System.out.println("Benvenuto!");
@@ -133,9 +153,11 @@ public class Main {
                 System.out.println("2. Acquista abbonamento");
                 System.out.println("3. Verifica validità abbonamento");
                 System.out.println("4. Richiedi o rinnova tessera");
+                System.out.println("5. Vidima Biglietto");
                 System.out.println("0. Esci");
                 System.out.print("Scelta: ");
                 String scelta = scanner.nextLine();
+
 
 
                 switch (scelta) {
@@ -158,9 +180,7 @@ public class Main {
                                 break;
 
                             case "2":
-
                                 Tessera tesseraScelta = utente.getTessere().get(0);
-
 
                                 System.out.println("Scegli tipo abbonamento: 1. Settimanale  2. Mensile");
                                 String tipoInput = scanner.nextLine();
@@ -176,7 +196,6 @@ public class Main {
                                 }
 
 
-                                puntoEmissioneService = new PuntoEmissioneService(em);
                                 Abbonamento abbonamento = puntoEmissioneService.emettiAbbonamento(puntoEmissioneScelto, tesseraScelta, tipoScelto);
                                 System.out.println("Abbonamento emesso con successo! ID: " + abbonamento.getId());
                                 break;
@@ -186,10 +205,77 @@ public class Main {
                         }
                         break;
 
+                    case "3":
+                        List<Abbonamento> abbonamenti = utente.getTessere().stream()
+                                .flatMap(t -> t.getAbbonamenti().stream())
+                                .toList();
+
+                        if (abbonamenti.isEmpty()) {
+                            System.out.println("Nessun abbonamento trovato.");
+                            break;
+                        }
+
+                        for (Abbonamento ab : abbonamenti) {
+                            boolean valido = ab.isValido();
+                            System.out.println("Abbonamento ID: " + ab.getId() + " - Tipo: " + ab.getTipoAbbonamento()
+                                    + " - Emesso il: " + ab.getDataInizio() + " - Valido: " + (valido ? "SÌ" : "NO"));
+                        }
+                        break;
+
+                    case "4":
+                        System.out.println("Inserisci il numero della tessera da rinnovare:");
+                        String numero = scanner.nextLine();
+                        Tessera tessera = tesseraDao.findByNumero(numero);
+                        if (tessera != null) {
+                            tesseraDao.rinnovaTessera(tessera);
+                            System.out.println("Tessera rinnovata con successo!");
+                        } else if (tessera == null){
+                            System.out.println("Tessera non trovata.");
+                        } else{
+                        System.out.println("Tessera ancora valida");
+                    }
+                        break;
+
+                    case "5":
+                        System.out.print("Inserisci ID biglietto da vidimare: ");
+                        String idInput = scanner.nextLine();
+
+                        try {
+                            long idBiglietto = Long.parseLong(idInput);
+
+                            // Mostro i mezzi disponibili con ID e tipo
+                            List<Mezzo> mezzi = mezzoDao.trovaTutti();
+                            System.out.println("Mezzi disponibili:");
+                            for (Mezzo m : mezzi) {
+                                System.out.println("ID: " + m.getId() + " - Tipo: " + m.getTipo().name());
+                            }
+
+                            System.out.print("Inserisci ID del mezzo per la vidimazione: ");
+                            long idMezzo = Long.parseLong(scanner.nextLine());
+                            Mezzo mezzo = mezzoDao.trovaPerId(idMezzo);
+
+                            if (mezzo == null) {
+                                System.out.println("Mezzo non trovato.");
+                            } else {
+                                String risultato = bigliettoDao.vidimaBiglietto(idBiglietto, mezzo);
+                                System.out.println(risultato);
+                            }
+
+                        } catch (NumberFormatException e) {
+                            System.out.println("Input non valido. Inserisci un numero valido.");
+                        }
+                        break;
+
+                    case "0":
+                        System.out.println("Uscita dal menu utente.");
+                        return; // esci dal menu utente (puoi anche fare break se vuoi far tornare al menu principale)
+
                     default:
                         System.out.println("Scelta non valida.");
                 }
+
             }
+
         }
     }
 
