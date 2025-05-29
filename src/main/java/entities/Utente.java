@@ -18,7 +18,7 @@ public class Utente {
     private String nomeUtente;
     private String password;
 
-
+    @Enumerated(EnumType.STRING)
     private TipoUtente tipoUtente;
 
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL)

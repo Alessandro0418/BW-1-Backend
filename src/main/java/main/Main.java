@@ -1,9 +1,8 @@
 package main;
 
-import entities.Biglietto;
-import entities.PuntoEmissione;
+import Enumeration.TipoAbbonamento;
+import entities.*;
 import service.PuntoEmissioneService;
-import entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -142,6 +141,30 @@ public class Main {
                         break;
 
                     case "2":
+
+                        System.out.println("Scegli tipo abbonamento: ");
+                        System.out.println("1. Settimanale");
+                        System.out.println("2. Mensile");
+                        String sceltaTipo = scanner.nextLine();
+
+                        TipoAbbonamento tipoAbbonamento;
+                        switch (sceltaTipo) {
+                            case "1" -> tipoAbbonamento = TipoAbbonamento.SETTIMANALE;
+                            case "2" -> tipoAbbonamento = TipoAbbonamento.MENSILE;
+                            default -> {
+                                System.out.println("Scelta non valida.");
+                                break;
+                            }
+                        }
+
+                        // 2. Simulazione recupero tessera (poi userai il servizio tessere reale)
+                        Tessera tessera = ...; // Recupera la tessera associata all'utente loggato
+
+                        // 3. Chiama il servizio
+                        PuntoEmissioneService pes = new PuntoEmissioneService(em);
+                        Abbonamento nuovo = pes.emettiAbbonamento(puntoEmissioneScelto, tessera, tipoAbbonamento);
+                        System.out.println("Abbonamento creato con successo: " + nuovo);
+                        break;
 
 
 

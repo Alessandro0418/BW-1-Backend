@@ -1,4 +1,5 @@
 package entities;
+import Enumeration.StatoMezzo;
 import Enumeration.TipoMezzo;
 import jakarta.persistence.*;
 

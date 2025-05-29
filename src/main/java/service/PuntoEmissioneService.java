@@ -1,9 +1,13 @@
 package service;
 
+import Enumeration.TipoAbbonamento;
+import dao.AbbonamentoDao;
 import dao.BigliettoDao;
 import dao.PuntoEmissioneDao;
+import entities.Abbonamento;
 import entities.Biglietto;
 import entities.PuntoEmissione;
+import entities.Tessera;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
@@ -32,5 +36,25 @@ public class PuntoEmissioneService {
         bigliettoDao.save(biglietto);
 
         return biglietto;
+    }
+
+    public Abbonamento emettiAbbonamento(PuntoEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
+        LocalDate dataInizio = LocalDate.now();
+        LocalDate dataFine;
+        switch (tipo) {
+            case SETTIMANALE -> dataFine = dataInizio.plusWeeks(1);
+            case MENSILE -> dataFine = dataInizio.plusMonths(1);
+            default -> throw new IllegalArgumentException("Tipo di abbonamento non valido");
+
+        }
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setDataInizio(dataInizio);
+        abbonamento.setDataFine(dataFine);
+        abbonamento.setTipoAbbonamento(tipo);
+        abbonamento.setTessera(tessera);
+
+        new AbbonamentoDao(em).save(abbonamento);
+
+        return abbonamento;
     }
 }
