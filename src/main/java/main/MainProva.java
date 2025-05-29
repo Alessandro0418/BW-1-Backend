@@ -1,83 +1,200 @@
 package main;
 
+import Enumeration.StatoMezzo;
+import Enumeration.TipoAbbonamento;
+import Enumeration.TipoMezzo;
 import entities.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
+import service.GestioneUtentiService;
+import service.PuntoEmissioneService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
-import java.time.LocalDate;
-import Enumeration.*;
 
-public class Main {
+public class MainProva {
 
-    private static final Scanner scanner = new Scanner(System.in);
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("postgres");
     private static final EntityManager em = emf.createEntityManager();
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final GestioneUtentiService servizio = new GestioneUtentiService(em);
 
     public static void main(String[] args) {
+        PuntoEmissioneService pes = new PuntoEmissioneService(em);
+        pes.inizializzaPuntiEmissione();
 
         while (true) {
-            System.out.println("Seleziona un'opzione:");
+            System.out.println("Benvenuto!");
             System.out.println("1. Login");
-            System.out.println("2. Registrati");
+            System.out.println("2. Registrazione");
+            System.out.print("Scelta: ");
             String scelta = scanner.nextLine();
 
             switch (scelta) {
                 case "1":
-                    Utente utenteLoggato = login();
-                    if (utenteLoggato != null) {
-                        mostraMenuPerTipo(utenteLoggato);
-                    }
+                    gestisciLogin();
                     break;
                 case "2":
-                    registrazione();
+                    gestisciRegistrazione();
                     break;
                 default:
-                    System.out.println("Scelta non valida");
+                    System.out.println("Scelta non valida. Premi 1 per il login o 2 per la registrazione.");
             }
         }
     }
 
-    public static Utente login(){
-        System.out.println("Nome Utente: ");
-        String userName = scanner.nextLine();
-        System.out.println("password: ");
-        String pass = scanner.nextLine();
+    private static void gestisciLogin() {
+        System.out.print("Nome utente: ");
+        String username = scanner.nextLine();
 
-        TypedQuery<Utente> query = em.createQuery("SELECT u FROM Utente u WHERE u.nomeUtente = :userName AND u.password = :pass", Utente.class)
-                .setParameter("userName", userName)
-                .setParameter("pass", pass);
-        List<Utente> risultati = query.getResultList();
+        Utente utente = servizio.getUtenteByNomeUtente(username);
 
-        if (risultati.isEmpty()) {
-            System.out.println("Utente non trovato o credenziali errate.");
-            return null;
+        if (utente == null) {
+            System.out.println("Utente non registrato. Vuoi registrarti ora? (s/n)");
+            String scelta = scanner.nextLine();
+            if (scelta.equalsIgnoreCase("s")) {
+                gestisciRegistrazione();
+            } else {
+                System.out.println("Torno al menu principale.");
+            }
         } else {
-            return risultati.get(0);
+            boolean loginRiuscito = false;
+
+            while (!loginRiuscito) {
+                System.out.print("Password: ");
+                String password = scanner.nextLine();
+
+                if (utente.getPassword().equals(password)) {
+                    System.out.println("Accesso effettuato come " + utente.getTipoUtente());
+                    mostraMenuPerTipo(utente);
+                    loginRiuscito = true;
+                } else {
+                    System.out.println("Password errata. Vuoi riprovare? (s/n)");
+                    String risposta = scanner.nextLine();
+                    if (!risposta.equalsIgnoreCase("s")) {
+                        System.out.println("Login annullato.");
+                        break;
+                    }
+                }
+            }
         }
     }
 
-    //implementare metodo login(),mostraMenuPerTipo, Registrazione()
+    private static void gestisciRegistrazione() {
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.print("Nome utente: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
 
-    public static void mostraMenuPerTipo(Utente utente){
-        if (utente.isAdmin()) {
+        try {
+            Utente nuovo = servizio.registraNuovoUtente(nome, username, password);
+            System.out.println("Registrazione completata! Ora puoi fare il login.");
+        } catch (RuntimeException e) {
+            System.out.println("Errore: " + e.getMessage());
+            if (e.getMessage().contains("già in uso")) {
+                System.out.println("Reindirizzamento al login...");
+                gestisciLogin();
+            }
+        }
+    }
+
+    private static void mostraMenuPerTipo(Utente utente) {
+        PuntoEmissioneService puntoEmissioneService = new PuntoEmissioneService(em);
+        List<PuntoEmissione> puntiEmissione = puntoEmissioneService.findAll();
+
+        int i = 0;
+        System.out.print("Scegliere punto emissione attivi/in servizio : ");
+        for (PuntoEmissione puntoEmissione : puntiEmissione) {
+            System.out.print(i + ": " + puntoEmissione.getNome());
+            i++;
+        }
+
+        String puntoEmissione = scanner.nextLine();
+        PuntoEmissione puntoEmissioneScelto = puntiEmissione.get(Integer.parseInt(puntoEmissione));
+
+        if (utente.getTipoUtente().name().equals("ADMIN")) {
+            System.out.println("MENU ADMIN");
             mostraMenuAdmin();
         } else {
-            mostraMenuUtente();
+            System.out.println("MENU UTENTE");
+            while (true) {
+                System.out.println("--- MENU UTENTE ---");
+                System.out.println("1. Acquista biglietto");
+                System.out.println("2. Acquista abbonamento");
+                System.out.println("3. Verifica validità abbonamento");
+                System.out.println("4. Richiedi o rinnova tessera");
+                System.out.println("5. Menu vidimazione biglietto");
+                System.out.println("0. Esci");
+                System.out.print("Scelta: ");
+                String scelta = scanner.nextLine();
+
+                switch (scelta) {
+                    case "1":
+                        PuntoEmissioneService puntoEmissioneService1 = new PuntoEmissioneService(em);
+                        Biglietto biglietto = puntoEmissioneService1.emettiBiglietto(puntoEmissioneScelto);
+                        System.out.println("Biglietto emesso con successo!");
+                        System.out.println("ID: " + biglietto.getId() + ", Data: " + biglietto.getDataDiEmissione());
+                        break;
+
+                    case "2":
+                        System.out.println("1. Crea una tessera");
+                        System.out.println("2. Crea un abbonamento");
+                        String sceltaUtente = scanner.nextLine();
+
+                        switch (sceltaUtente) {
+                            case "1":
+                                servizio.creaTessera(utente);
+                                System.out.println("Tessera creata con successo.");
+                                break;
+                            case "2":
+                                Tessera tesseraScelta = utente.getTessere().get(0);
+                                System.out.println("Scegli tipo abbonamento: 1. Settimanale  2. Mensile");
+                                String tipoInput = scanner.nextLine();
+                                TipoAbbonamento tipoScelto;
+
+                                if (tipoInput.equals("1")) {
+                                    tipoScelto = TipoAbbonamento.SETTIMANALE;
+                                } else if (tipoInput.equals("2")) {
+                                    tipoScelto = TipoAbbonamento.MENSILE;
+                                } else {
+                                    System.out.println("Tipo abbonamento non valido.");
+                                    break;
+                                }
+
+                                puntoEmissioneService = new PuntoEmissioneService(em);
+                                Abbonamento abbonamento = puntoEmissioneService.emettiAbbonamento(puntoEmissioneScelto, tesseraScelta, tipoScelto);
+                                System.out.println("Abbonamento emesso con successo! ID: " + abbonamento.getId());
+                                break;
+                            default:
+                                System.out.println("Scelta non valida.");
+                        }
+                        break;
+
+                    case "5":
+                        mostraMenuUtente();
+                        break;
+
+                    case "0":
+                        return;
+
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+            }
         }
     }
 
-    //Menu Admin
-    public static void mostraMenuAdmin(){
-        while (true){
+    private static void mostraMenuAdmin() {
+        while (true) {
+            System.out.println("---- MENU ADMIN ----");
             System.out.println("1. Inserisci un nuovo mezzo");
             System.out.println("2. Cambia stato di un mezzo");
-            System.out.println("3. Visualizza mezzo in servizio");
+            System.out.println("3. Visualizza mezzi in servizio");
             System.out.println("4. Torna indietro");
+            System.out.print("Scelta: ");
             String scelta = scanner.nextLine();
 
             switch (scelta) {
@@ -98,11 +215,12 @@ public class Main {
         }
     }
 
-    //Menu Utente
-    public static void mostraMenuUtente() {
+    private static void mostraMenuUtente() {
         while (true) {
+            System.out.println("---- MENU UTENTE BASE ----");
             System.out.println("1. Vidimare un biglietto");
-            System.out.println("2. Esci");
+            System.out.println("2. Torna indietro");
+            System.out.print("Scelta: ");
             String scelta = scanner.nextLine();
 
             switch (scelta) {
@@ -117,20 +235,19 @@ public class Main {
         }
     }
 
-    //Vidimazione
-    public static void vidimareBiglietto(){
-        System.out.println("Inserisci ID biglietto: ");
+    private static void vidimareBiglietto() {
+        System.out.print("Inserisci ID biglietto: ");
         Long idBiglietto = Long.parseLong(scanner.nextLine());
 
-        System.out.println("Inserisci ID mezzo:");
+        System.out.print("Inserisci ID mezzo: ");
         Long idMezzo = Long.parseLong(scanner.nextLine());
 
         em.getTransaction().begin();
-        try{
+        try {
             Biglietto biglietto = em.find(Biglietto.class, idBiglietto);
             Mezzo mezzo = em.find(Mezzo.class, idMezzo);
 
-            if (biglietto == null || mezzo == null){
+            if (biglietto == null || mezzo == null) {
                 System.out.println("Biglietto o mezzo non trovati.");
                 em.getTransaction().rollback();
                 return;
@@ -144,18 +261,17 @@ public class Main {
             em.persist(vid);
             em.getTransaction().commit();
             System.out.println("Biglietto vidimato con successo.");
-        } catch (Exception e){
+        } catch (Exception e) {
             em.getTransaction().rollback();
             System.out.println("Errore nella vidimazione: " + e.getMessage());
         }
     }
 
-    //Inserisci mezzo
-    public static void inserisciMezzo(){
-        System.out.println("Tipo mezzo: ");
-        String tipo = scanner.nextLine().toLowerCase();
+    private static void inserisciMezzo() {
+        System.out.print("Tipo mezzo (AUTOBUS, TRAM): ");
+        String tipo = scanner.nextLine().toUpperCase();
 
-        System.out.println("Capienza: ");
+        System.out.print("Capienza: ");
         int capienza = Integer.parseInt(scanner.nextLine());
 
         em.getTransaction().begin();
@@ -171,10 +287,9 @@ public class Main {
             em.getTransaction().rollback();
             System.out.println("Errore: " + e.getMessage());
         }
-    };
+    }
 
-    //Cambia stato mezzo
-    public static void cambiaStatoMezzo() {
+    private static void cambiaStatoMezzo() {
         System.out.print("ID del mezzo: ");
         Long id = Long.parseLong(scanner.nextLine());
 
@@ -192,7 +307,6 @@ public class Main {
 
             StatoMezzo nuovoStato = StatoMezzo.valueOf(statoInput);
 
-            //Chiudere periodo operativo
             TypedQuery<PeriodoOperativo> query = em.createQuery(
                     "SELECT p FROM PeriodoOperativo p WHERE p.mezzo = :mezzo AND p.dataFine IS NULL",
                     PeriodoOperativo.class
@@ -205,15 +319,12 @@ public class Main {
                 corrente.setDataFine(LocalDate.now());
             }
 
-            //Crea nuovo periodo
             PeriodoOperativo nuovoPeriodo = new PeriodoOperativo();
             nuovoPeriodo.setMezzo(mezzo);
             nuovoPeriodo.setStato(nuovoStato);
             nuovoPeriodo.setDataInizio(LocalDate.now());
 
             em.persist(nuovoPeriodo);
-
-            //Aggiorna stato
             mezzo.setStatoAttuale(nuovoStato);
 
             em.getTransaction().commit();
@@ -224,9 +335,19 @@ public class Main {
         }
     }
 
+    private static void visualizzaMezziInServizio() {
+        TypedQuery<Mezzo> query = em.createQuery(
+                "SELECT m FROM Mezzo m WHERE m.statoAttuale = :stato", Mezzo.class);
+        query.setParameter("stato", StatoMezzo.IN_SERVIZIO);
 
-
-    //Visualizza mezzi in servizio
-    public static void visualizzaMezziInServizio(){};
-
+        List<Mezzo> mezzi = query.getResultList();
+        if (mezzi.isEmpty()) {
+            System.out.println("Nessun mezzo in servizio.");
+        } else {
+            System.out.println("Mezzi attualmente in servizio:");
+            for (Mezzo m : mezzi) {
+                System.out.println("ID: " + m.getId() + " - Tipo: " + m.getTipo() + ", Capienza: " + m.getCapienza());
+            }
+        }
+    }
 }
