@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import Enumeration.*;
 
 @Entity
 @Inheritance (strategy = InheritanceType.SINGLE_TABLE)
