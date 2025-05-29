@@ -22,8 +22,8 @@ public class Biglietto {
     public Biglietto() {
     }
 
-    public Biglietto(Long id, LocalDate dataDiEmissione, Mezzo mezzoVidimazione, boolean vidimato, PuntoEmissione puntoEmissione) {
-        this.id = id;
+    public Biglietto( LocalDate dataDiEmissione, Mezzo mezzoVidimazione, boolean vidimato, PuntoEmissione puntoEmissione) {
+
         this.dataDiEmissione = dataDiEmissione;
         this.mezzoVidimazione = mezzoVidimazione;
         this.vidimato = vidimato;

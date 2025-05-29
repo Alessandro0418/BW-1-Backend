@@ -1,5 +1,6 @@
 package entities;
 
+import Enumeration.TipoAbbonamento;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,18 +16,18 @@ public class Abbonamento {
     private LocalDate dataInizio;
     @Column(name = "data_fine")
     private LocalDate dataFine;
-
-    private String tipo;
+    @Enumerated(EnumType.STRING)
+    private TipoAbbonamento tipoAbbonamento;
 
     @ManyToOne
     @JoinColumn(name = "tessera_id")
     private Tessera tessera;
 
-    public Abbonamento(int id, LocalDate dataInizio, LocalDate dataFine, String tipo, Tessera tessera) {
+    public Abbonamento(int id, LocalDate dataInizio, LocalDate dataFine, TipoAbbonamento tipoAbbonamento, Tessera tessera) {
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
-        this.tipo = tipo;
+        this.tipoAbbonamento = tipoAbbonamento;
         this.tessera = tessera;
     }
 
@@ -62,12 +63,12 @@ public class Abbonamento {
         this.dataFine = dataFine;
     }
 
-    public String getTipo() {
-        return tipo;
+    public TipoAbbonamento getTipoAbbonamento() {
+        return tipoAbbonamento;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoAbbonamento(TipoAbbonamento tipoAbbonamento) {
+        this.tipoAbbonamento = tipoAbbonamento;
     }
 
     public Tessera getTessera() {
@@ -84,7 +85,7 @@ public class Abbonamento {
                 "id=" + id +
                 ", dataInizio=" + dataInizio +
                 ", dataFine=" + dataFine +
-                ", tipo='" + tipo + '\'' +
+                ", tipo='" + tipoAbbonamento + '\'' +
                 ", tessera=" + tessera +
                 '}';
     }

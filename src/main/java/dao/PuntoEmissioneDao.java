@@ -16,11 +16,9 @@ public class PuntoEmissioneDao {
         this.em = em;
     }
 
-
     public void save(PuntoEmissione pe) {
-        em.getTransaction().begin();
         em.persist(pe);
-        em.getTransaction().commit();
+
     }
 
     public PuntoEmissione getById(Long id) {

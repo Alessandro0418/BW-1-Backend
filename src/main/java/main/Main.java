@@ -1,11 +1,14 @@
 package main;
 
-import Enumeration.TipoUtente;
-import entities.Utente;
+import Enumeration.TipoAbbonamento;
+import entities.*;
+import service.PuntoEmissioneService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import entities.GestioneUtentiService;
+import service.GestioneUtentiService;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -15,7 +18,13 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final GestioneUtentiService servizio = new GestioneUtentiService(em);
 
+
+
     public static void main(String[] args) {
+        PuntoEmissioneService pes = new PuntoEmissioneService(em);
+        pes.inizializzaPuntiEmissione();
+
+
         while (true) {
             System.out.println("Benvenuto!");
             System.out.println("1. Login");
@@ -81,15 +90,11 @@ public class Main {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        System.out.print("Tipo utente (USER/ADMIN): ");
-        String tipoUtenteInput = scanner.nextLine();
 
         try {
-            TipoUtente tipoUtente = TipoUtente.valueOf(tipoUtenteInput.toUpperCase());
-            Utente nuovo = servizio.registraNuovoUtente(nome, username, password, tipoUtente);
+            // Imposta automaticamente il tipo utente come USER
+            Utente nuovo = servizio.registraNuovoUtente(nome, username, password);
             System.out.println("Registrazione completata! Ora puoi fare il login.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Tipo utente non valido. Usa USER o ADMIN.");
         } catch (RuntimeException e) {
             System.out.println("Errore: " + e.getMessage());
             if (e.getMessage().contains("già in uso")) {
@@ -100,12 +105,91 @@ public class Main {
     }
 
     private static void mostraMenuPerTipo(Utente utente) {
+
+        PuntoEmissioneService puntoEmissioneService = new PuntoEmissioneService(em);
+        List<PuntoEmissione> puntiEmissione = puntoEmissioneService.findAll();
+
+        int i = 0;
+        System.out.print("Scegliere punto emissione attivi/in servizio : ");
+        for (PuntoEmissione puntoEmissione : puntiEmissione) {
+            System.out.print(i + ": " + puntoEmissione.getNome());
+            i++;
+        }
+
+        String puntoEmissione = scanner.nextLine();
+
+        PuntoEmissione puntoEmissioneScelto = puntiEmissione.get(Integer.parseInt(puntoEmissione));
+
+
         if (utente.getTipoUtente().name().equals("ADMIN")) {
             System.out.println("MENU ADMIN");
             // inserisci opzioni admin qui
         } else {
             System.out.println("MENU UTENTE");
-            // inserisci opzioni utente semplice qui
+
+            while (true) {
+                System.out.println("--- MENU UTENTE ---");
+                System.out.println("1. Acquista biglietto");
+                System.out.println("2. Acquista abbonamento");
+                System.out.println("3. Verifica validità abbonamento");
+                System.out.println("4. Richiedi o rinnova tessera");
+                System.out.println("0. Esci");
+                System.out.print("Scelta: ");
+                String scelta = scanner.nextLine();
+
+
+                switch (scelta) {
+                    case "1":
+                        PuntoEmissioneService puntoEmissioneService1 = new PuntoEmissioneService(em);
+                        Biglietto biglietto = puntoEmissioneService1.emettiBiglietto(puntoEmissioneScelto);
+                        System.out.println("Biglietto emesso con successo!");
+                        System.out.println("ID: " + biglietto.getId() + ", Data: " + biglietto.getDataDiEmissione());
+                        break;
+
+                    case "2":
+                        System.out.println("1. Crea una tessera");
+                        System.out.println("2. Crea un abbonamento");
+                        String sceltaUtente = scanner.nextLine();
+
+                        switch (sceltaUtente) {
+                            case "1":
+                                servizio.creaTessera(utente);
+                                System.out.println("Tessera creata con successo.");
+                                break;
+
+                            case "2":
+
+                                Tessera tesseraScelta = utente.getTessere().get(0);
+
+
+                                System.out.println("Scegli tipo abbonamento: 1. Settimanale  2. Mensile");
+                                String tipoInput = scanner.nextLine();
+                                TipoAbbonamento tipoScelto;
+
+                                if (tipoInput.equals("1")) {
+                                    tipoScelto = TipoAbbonamento.SETTIMANALE;
+                                } else if (tipoInput.equals("2")) {
+                                    tipoScelto = TipoAbbonamento.MENSILE;
+                                } else {
+                                    System.out.println("Tipo abbonamento non valido.");
+                                    break;
+                                }
+
+
+                                puntoEmissioneService = new PuntoEmissioneService(em);
+                                Abbonamento abbonamento = puntoEmissioneService.emettiAbbonamento(puntoEmissioneScelto, tesseraScelta, tipoScelto);
+                                System.out.println("Abbonamento emesso con successo! ID: " + abbonamento.getId());
+                                break;
+
+                            default:
+                                System.out.println("Scelta non valida.");
+                        }
+                        break;
+
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+            }
         }
     }
 }

@@ -1,7 +1,11 @@
-package entities;
+package service;
 
 import Enumeration.TipoUtente;
 import dao.UtenteDAO;
+import entities.Abbonamento;
+import entities.Biglietto;
+import entities.Tessera;
+import entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -17,7 +21,7 @@ public class GestioneUtentiService {
         this.em = em;
     }
 
-    public Utente creaUtente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente,List <Tessera> tessere) {
+    public Utente creaUtente(int id, String nome, String nomeUtente, String password, TipoUtente tipoUtente, List <Tessera> tessere) {
         Utente u = new Utente(id,nome,nomeUtente,password,tipoUtente, tessere);
         em.getTransaction().begin();
         em.persist(u);
@@ -52,27 +56,7 @@ public class GestioneUtentiService {
         return tessera;
     }
 
-    public Abbonamento emettiAbbonamento(Tessera tessera, String tipo) {
-        Abbonamento abbonamento = new Abbonamento();
-        abbonamento.setTipo(tipo);
-        abbonamento.setDataInizio(LocalDate.now());
 
-        if (tipo.equalsIgnoreCase("settimanale")) {
-            abbonamento.setDataFine(LocalDate.now().plusWeeks(1));
-        } else if (tipo.equalsIgnoreCase("mensile")) {
-            abbonamento.setDataFine(LocalDate.now().plusMonths(1));
-        } else {
-            throw new IllegalArgumentException("Tipo abbonamento non valido");
-        }
-
-        abbonamento.setTessera(tessera);
-
-        em.getTransaction().begin();
-        em.persist(abbonamento);
-        em.getTransaction().commit();
-
-        return abbonamento;
-    }
 
     public boolean isAbbonamentoValido(String numeroTessera) {
         try {
@@ -99,15 +83,17 @@ public class GestioneUtentiService {
         return utente; // login riuscito
     }
 
-    public Utente registraNuovoUtente(String nome, String nomeUtente, String password, TipoUtente tipoUtente) {
+    public Utente registraNuovoUtente(String nome, String nomeUtente, String password) {
         Utente esistente = getUtenteByNomeUtente(nomeUtente);
 
         if (esistente != null) {
             throw new RuntimeException("Nome utente già in uso.");
         }
 
-        Utente nuovo = new Utente(nome, nomeUtente, password, tipoUtente, null);
+        Utente nuovo = new Utente(nome, nomeUtente, password, TipoUtente.USER, null);
         salvaUtente(nuovo);
         return nuovo;
     }
+
+
 }
