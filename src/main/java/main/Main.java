@@ -41,13 +41,13 @@ public class Main {
 
         MezzoDao mezzoDao = new MezzoDao(em);
 
-        Mezzo tram = new Mezzo();
-        tram.setTipo(TipoMezzo.TRAM);
-        mezzoDao.salva(tram);
-
-        Mezzo autobus = new Mezzo();
-        autobus.setTipo(TipoMezzo.AUTOBUS);
-        mezzoDao.salva(autobus);
+//        Mezzo tram = new Mezzo();
+//        tram.setTipo(TipoMezzo.TRAM);
+//        mezzoDao.salva(tram);
+//
+//        Mezzo autobus = new Mezzo();
+//        autobus.setTipo(TipoMezzo.AUTOBUS);
+//        mezzoDao.salva(autobus);
 
         while (true) {
             System.out.println("Benvenuto!");
