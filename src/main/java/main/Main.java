@@ -11,9 +11,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import service.GestioneUtentiService;
+import Enumeration.StatoMezzo;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
+
 
 public class Main {
 
@@ -279,5 +283,116 @@ public class Main {
         }
     }
 
+    private static void mostraMenuAdmin() {
+        while (true) {
+            System.out.println("---- MENU ADMIN ----");
+            System.out.println("1. Inserisci un nuovo mezzo");
+            System.out.println("2. Cambia stato di un mezzo");
+            System.out.println("3. Visualizza mezzi in servizio");
+            System.out.println("4. Torna indietro");
+            System.out.print("Scelta: ");
+            String scelta = scanner.nextLine();
+
+            switch (scelta) {
+                case "1":
+                    inserisciMezzo();
+                    break;
+                case "2":
+                    cambiaStatoMezzo();
+                    break;
+                case "3":
+                    visualizzaMezziInServizio();
+                    break;
+                case "4":
+                    return;
+                default:
+                    System.out.println("Scelta non valida.");
+            }
+        }
+    }
+
+    private static void inserisciMezzo() {
+        System.out.print("Tipo mezzo (AUTOBUS, TRAM): ");
+        String tipo = scanner.nextLine().toUpperCase();
+
+        System.out.print("Capienza: ");
+        int capienza = Integer.parseInt(scanner.nextLine());
+
+        em.getTransaction().begin();
+        try {
+            Mezzo mezzo = new Mezzo();
+            mezzo.setTipo(TipoMezzo.valueOf(tipo));
+            mezzo.setCapienza(capienza);
+            mezzo.setStatoAttuale(StatoMezzo.IN_SERVIZIO);
+            em.persist(mezzo);
+            em.getTransaction().commit();
+            System.out.println("Mezzo inserito.");
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            System.out.println("Errore: " + e.getMessage());
+        }
+    }
+
+    private static void cambiaStatoMezzo() {
+        System.out.print("ID del mezzo: ");
+        Long id = Long.parseLong(scanner.nextLine());
+
+        System.out.print("Nuovo stato (IN_SERVIZIO / IN_MANUTENZIONE): ");
+        String statoInput = scanner.nextLine().toUpperCase();
+
+        em.getTransaction().begin();
+        try {
+            Mezzo mezzo = em.find(Mezzo.class, id);
+            if (mezzo == null) {
+                System.out.println("Mezzo non trovato.");
+                em.getTransaction().rollback();
+                return;
+            }
+
+            StatoMezzo nuovoStato = StatoMezzo.valueOf(statoInput);
+
+            TypedQuery<PeriodoOperativo> query = em.createQuery(
+                    "SELECT p FROM PeriodoOperativo p WHERE p.mezzo = :mezzo AND p.dataFine IS NULL",
+                    PeriodoOperativo.class
+            );
+            query.setParameter("mezzo", mezzo);
+            List<PeriodoOperativo> periodiAperti = query.getResultList();
+
+            if (!periodiAperti.isEmpty()) {
+                PeriodoOperativo corrente = periodiAperti.get(0);
+                corrente.setDataFine(LocalDate.now());
+            }
+
+            PeriodoOperativo nuovoPeriodo = new PeriodoOperativo();
+            nuovoPeriodo.setMezzo(mezzo);
+            nuovoPeriodo.setStato(nuovoStato);
+            nuovoPeriodo.setDataInizio(LocalDate.now());
+
+            em.persist(nuovoPeriodo);
+            mezzo.setStatoAttuale(nuovoStato);
+
+            em.getTransaction().commit();
+            System.out.println("Stato del mezzo aggiornato e periodo registrato.");
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            System.out.println("Errore durante il cambio di stato: " + e.getMessage());
+        }
+    }
+
+    private static void visualizzaMezziInServizio() {
+        TypedQuery<Mezzo> query = em.createQuery(
+                "SELECT m FROM Mezzo m WHERE m.statoAttuale = :stato", Mezzo.class);
+        query.setParameter("stato", StatoMezzo.IN_SERVIZIO);
+
+        List<Mezzo> mezzi = query.getResultList();
+        if (mezzi.isEmpty()) {
+            System.out.println("Nessun mezzo in servizio.");
+        } else {
+            System.out.println("Mezzi attualmente in servizio:");
+            for (Mezzo m : mezzi) {
+                System.out.println("ID: " + m.getId() + " - Tipo: " + m.getTipo() + ", Capienza: " + m.getCapienza());
+            }
+        }
+    }
 
 }
