@@ -18,7 +18,13 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final GestioneUtentiService servizio = new GestioneUtentiService(em);
 
+
+
     public static void main(String[] args) {
+        PuntoEmissioneService pes = new PuntoEmissioneService(em);
+        pes.inizializzaPuntiEmissione();
+
+        
         while (true) {
             System.out.println("Benvenuto!");
             System.out.println("1. Login");
@@ -104,7 +110,7 @@ public class Main {
         List<PuntoEmissione> puntiEmissione = puntoEmissioneService.findAll();
 
         int i = 0;
-        System.out.print("Scegliere punto emissione: ");
+        System.out.print("Scegliere punto emissione attivi/in servizio : ");
         for (PuntoEmissione puntoEmissione : puntiEmissione) {
             System.out.print(i + ": " + puntoEmissione.getNome());
             i++;

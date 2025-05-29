@@ -4,21 +4,19 @@ import Enumeration.TipoAbbonamento;
 import dao.AbbonamentoDao;
 import dao.BigliettoDao;
 import dao.PuntoEmissioneDao;
-import entities.Abbonamento;
-import entities.Biglietto;
-import entities.PuntoEmissione;
-import entities.Tessera;
+import entities.*;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class PuntoEmissioneService {
-
+    private  PuntoEmissioneDao dao;
     private EntityManager em;
 
     public PuntoEmissioneService(EntityManager em) {
         this.em = em;
+        this.dao = new PuntoEmissioneDao(em);
     }
 
     public List<PuntoEmissione> findAll() {
@@ -56,5 +54,27 @@ public class PuntoEmissioneService {
         new AbbonamentoDao(em).save(abbonamento);
 
         return abbonamento;
+    }
+
+    public void inizializzaPuntiEmissione() {
+        if (findAll().isEmpty()) {
+            em.getTransaction().begin();
+
+            DistributoreAutomatico d = new DistributoreAutomatico();
+            d.setNome("Distributore Centrale");
+            // imposta servizio true se serve
+
+
+            RivenditoreAutorizzato r = new RivenditoreAutorizzato();
+            r.setNome("Edicola Stazione");
+
+
+            dao.save(d);
+            dao.save(r);
+
+            em.getTransaction().commit();
+
+            System.out.println("Punti di emissione inizializzati.");
+        }
     }
 }
