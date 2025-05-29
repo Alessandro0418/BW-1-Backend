@@ -140,6 +140,50 @@ public class Main {
                         System.out.println("ID: " + biglietto.getId() + ", Data: " + biglietto.getDataDiEmissione());
                         break;
 
+                    case "2":
+                        System.out.println("1. Crea una tessera");
+                        System.out.println("2. Crea un abbonamento");
+                        String sceltaUtente = scanner.nextLine();
+
+                        switch (sceltaUtente) {
+                            case "1":
+                                servizio.creaTessera(utente);
+                                System.out.println("Tessera creata con successo.");
+                                break;
+
+                            case "2":
+
+                                Tessera tesseraScelta = utente.getTessere().get(0);
+
+
+                                System.out.println("Scegli tipo abbonamento: 1. Settimanale  2. Mensile");
+                                String tipoInput = scanner.nextLine();
+                                TipoAbbonamento tipoScelto;
+
+                                if (tipoInput.equals("1")) {
+                                    tipoScelto = TipoAbbonamento.SETTIMANALE;
+                                } else if (tipoInput.equals("2")) {
+                                    tipoScelto = TipoAbbonamento.MENSILE;
+                                } else {
+                                    System.out.println("Tipo abbonamento non valido.");
+                                    break;
+                                }
+
+
+                                puntoEmissioneService = new PuntoEmissioneService(em);
+                                Abbonamento abbonamento = puntoEmissioneService.emettiAbbonamento(puntoEmissioneScelto, tesseraScelta, tipoScelto);
+                                System.out.println("Abbonamento emesso con successo! ID: " + abbonamento.getId());
+                                break;
+
+                            default:
+                                System.out.println("Scelta non valida.");
+                        }
+                        break;
+
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+
                    
 
 
