@@ -103,18 +103,22 @@ public class BigliettoDao {
                 .getSingleResult();
     }
 
-        //convalida biglietto
-    public void vidimaBiglietto (long id, Mezzo mezzo){
-        Biglietto b = getById(id);
-        if(b != null && !b.isVidimato()){
+
+
+        public String vidimaBiglietto(long id, Mezzo mezzo) {
+            Biglietto b = getById(id);
+            if (b == null) return "Biglietto non trovato.";
+            if (b.isVidimato()) return "Biglietto già vidimato.";
+
             em.getTransaction().begin();
             b.setVidimato(true);
             b.setMezzoVidimazione(mezzo);
             em.merge(b);
             em.getTransaction().commit();
+
+            return "Biglietto vidimato con successo.";
         }
 
     }
 
 
-}

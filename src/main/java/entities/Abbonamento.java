@@ -79,6 +79,12 @@ public class Abbonamento {
         this.tessera = tessera;
     }
 
+    public boolean isValido() {
+        LocalDate oggi = LocalDate.now();
+        return (dataInizio != null && dataFine != null) &&
+                (!oggi.isBefore(dataInizio) && !oggi.isAfter(dataFine));
+    }
+
     @Override
     public String toString() {
         return "Abbonamneto{" +
