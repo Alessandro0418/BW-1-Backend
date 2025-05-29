@@ -1,6 +1,7 @@
 package dao;
 
 import entities.Tessera;
+import entities.Utente;
 import jakarta.persistence.EntityManager;
 
 public class TesseraDao {
@@ -26,5 +27,11 @@ public class TesseraDao {
         em.getTransaction().begin();
         em.remove(em.contains(tessera) ? tessera : em.merge(tessera));
         em.getTransaction().commit();
+    }
+
+    public Tessera getTesseraByUtente(Utente utente) {
+        return em.createQuery("SELECT t FROM Tessera t WHERE t.utente = :utente", Tessera.class)
+                .setParameter("utente", utente)
+                .getSingleResult();
     }
 }
