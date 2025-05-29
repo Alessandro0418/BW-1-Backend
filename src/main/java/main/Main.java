@@ -1,6 +1,7 @@
 package main;
 
 import Enumeration.TipoUtente;
+import entities.Tessera;
 import entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -32,45 +33,6 @@ public class Main {
                     break;
                 default:
                     System.out.println("Scelta non valida. Premi 1 per il login o 2 per la registrazione.");
-            }
-        }
-    }
-    
-    public static void mostraMenuPerTipo(Utente utente) {
-        if (utente.getTipoUtente().equalsIgnoreCase("admin")) {
-            System.out.println("Benvenuto Admin " + utente.getNomeUtente() + ". Il menu admin sarà disponibile presto.");
-        } else {
-            System.out.println("Benvenuto " + utente.getNomeUtente());
-
-            while (true) {
-                System.out.println("\nMenu Utente:");
-                System.out.println("1. Crea una tessera");
-                System.out.println("2. Crea un abbonamento");
-                System.out.println("3. Crea una tratta");
-                System.out.println("4. Vidima un biglietto su un mezzo");
-                System.out.println("5. Logout");
-
-                String sceltaUtente = scanner.nextLine();
-
-                switch (sceltaUtente) {
-                    case "1":
-                        creaTessera(utente);
-                        break;
-                    case "2":
-                        emettiAbbonamento(utente);
-                        break;
-                    case "3":
-                        creaTratta();
-                        break;
-                    case "4":
-                        vidimazioneBiglietti(utente);
-                        break;
-                    case "5":
-                        System.out.println("Logout effettuato.");
-                        return;
-                    default:
-                        System.out.println("Scelta non valida.");
-                }
             }
         }
     }
@@ -144,7 +106,62 @@ public class Main {
             // inserisci opzioni admin qui
         } else {
             System.out.println("MENU UTENTE");
-            // inserisci opzioni utente semplice qui
+            while (true) {
+                System.out.println("1. Crea una tessera");
+                System.out.println("2. Crea un abbonamento");
+                System.out.println("3. Crea una tratta");
+                System.out.println("4. Vidima un biglietto su un mezzo");
+                System.out.println("5. Logout");
+
+                String sceltaUtente = scanner.nextLine();
+
+                switch (sceltaUtente) {
+                    case "1":
+                        servizio.creaTessera(utente);
+                        System.out.println("Tessera creata con successo.");
+                        break;
+                    case "2":
+                        emettiAbbonamento(utente);
+                        break;
+                    case "3":
+                        creaTratta();
+                        break;
+                    case "4":
+                        vidimazioneBiglietti(utente);
+                        break;
+                    case "5":
+                        System.out.println("Logout effettuato.");
+                        return;
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+            }
         }
     }
+
+    private static void emettiAbbonamento(Utente utente) {
+        System.out.print("Inserisci numero tessera: ");
+        String numeroTessera = scanner.nextLine();
+
+        Tessera tessera = em.createQuery("SELECT t FROM Tessera t WHERE t.numero = :num", Tessera.class)
+                .setParameter("num", numeroTessera)
+                .getSingleResult();
+
+        System.out.print("Tipo abbonamento (settimanale/mensile): ");
+        String tipo = scanner.nextLine();
+
+        servizio.emettiAbbonamento(tessera, tipo);
+        System.out.println("Abbonamento emesso con successo.");
+    }
+
+    private static void creaTratta() {
+        System.out.println("Funzionalità 'creaTratta' non ancora implementata.");
+        //Metodo da creare
+    }
+
+    private static void vidimazioneBiglietti(Utente utente) {
+        System.out.println("Funzionalità 'vidimazioneBiglietti' non ancora implementata.");
+        //Metodo da creare
+    }
+
 }
