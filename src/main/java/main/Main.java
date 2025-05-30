@@ -37,15 +37,15 @@ public class Main {
         bigliettoDao = new BigliettoDao(em);
         mezzoDao = new MezzoDao(em);
 
-        MezzoDao mezzoDao = new MezzoDao(em);
-
-        Mezzo tram = new Mezzo();
-        tram.setTipo(TipoMezzo.TRAM);
-        mezzoDao.salva(tram);
-
-        Mezzo autobus = new Mezzo();
-        autobus.setTipo(TipoMezzo.AUTOBUS);
-        mezzoDao.salva(autobus);
+//        MezzoDao mezzoDao = new MezzoDao(em);
+//
+//        Mezzo tram = new Mezzo();
+//        tram.setTipo(TipoMezzo.TRAM);
+//        mezzoDao.salva(tram);
+//
+//        Mezzo autobus = new Mezzo();
+//        autobus.setTipo(TipoMezzo.AUTOBUS);
+//        mezzoDao.salva(autobus);
 
         while (true) {
             System.out.println("Benvenuto!");
@@ -315,8 +315,8 @@ public class Main {
 
                     case "4":
                         System.out.println("Inserisci il numero della tessera da rinnovare:");
-                        String numero = scanner.nextLine();
-                        Tessera tessera = tesseraDao.findByNumero(numero);
+                        int id = scanner.nextInt();
+                        Tessera tessera = tesseraDao.findById(id);
                         if (tessera != null) {
                             tesseraDao.rinnovaTessera(tessera);
                             System.out.println("Tessera rinnovata con successo!");

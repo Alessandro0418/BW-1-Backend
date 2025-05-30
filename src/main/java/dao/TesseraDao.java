@@ -15,9 +15,9 @@ public class TesseraDao {
         em.persist(tessera);
         em.getTransaction().commit();
     }
-    public Tessera findByNumero(String numero) {
-        return em.createQuery("SELECT t FROM Tessera t WHERE t.numero = :num", Tessera.class)
-                .setParameter("num", numero)
+    public Tessera findById(int id) {
+        return em.createQuery("SELECT t FROM Tessera t WHERE t.id = :id", Tessera.class)
+                .setParameter("id", id)
                 .getSingleResult();
     }
 
