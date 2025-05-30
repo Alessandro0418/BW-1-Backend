@@ -2,12 +2,14 @@ package main;
 
 import Enumeration.TipoAbbonamento;
 import entities.*;
+import service.*;
 import service.PuntoEmissioneService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import service.GestioneUtentiService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -123,7 +125,87 @@ public class Main {
 
         if (utente.getTipoUtente().name().equals("ADMIN")) {
             System.out.println("MENU ADMIN");
-            // inserisci opzioni admin qui
+
+            while (true) {
+                System.out.println("\n--- MENU ADMIN ---");
+                System.out.println("1. Visualizza biglietti/abbonamenti emessi per punto di emissione");
+                System.out.println("2. Visualizza biglietti/abbonamenti emessi in un periodo");
+                System.out.println("3. Visualizza biglietti vidimati su un mezzo o in un periodo");
+                System.out.println("4. Calcola tempo medio di percorrenza di una tratta da parte di un mezzo");
+                System.out.println("5. Visualizza mezzi in manutenzione o in servizio");
+                System.out.println("6. Visualizza tratte e percorrenze");
+                System.out.println("0. Esci");
+                System.out.print("Scelta: ");
+                String sceltaAdmin = scanner.nextLine();
+
+                AdminService adminService = new AdminService(em);
+
+                switch (sceltaAdmin) {
+                    case "1":
+                        List<Biglietto> biglietti = adminService.getBigliettiPerPuntoEmissione(puntoEmissioneScelto);
+                        List<Abbonamento> abbonamenti = adminService.getAbbonamentiPerPuntoEmissione(puntoEmissioneScelto);
+                        System.out.println("Biglietti emessi:");
+                        biglietti.forEach(System.out::println);
+                        System.out.println("Abbonamenti emessi:");
+                        abbonamenti.forEach(System.out::println);
+                        break;
+
+                    case "2":
+                        System.out.print("\nRicerca: \nInserisci data inizio (yyyy-mm-dd): ");
+                        LocalDate inizio = LocalDate.parse(scanner.nextLine());
+                        System.out.print("Inserisci data fine (yyyy-mm-dd): ");
+                        LocalDate fine = LocalDate.parse(scanner.nextLine());
+                        List<Biglietto> bigliettiPeriodo = adminService.getBigliettiInPeriodo(inizio, fine);
+                        List<Abbonamento> abbonamentiPeriodo = adminService.getAbbonamentiInPeriodo(inizio, fine);
+                        System.out.println("Biglietti emessi nel periodo:");
+                        bigliettiPeriodo.forEach(System.out::println);
+                        System.out.println("Abbonamenti emessi nel periodo:");
+                        abbonamentiPeriodo.forEach(System.out::println);
+                        break;
+
+                    case "3":
+                        System.out.print("Inserisci ID del mezzo: ");
+                        Long mezzoId = Long.parseLong(scanner.nextLine());
+                        Mezzo mezzo = em.find(Mezzo.class, mezzoId);
+                        if (mezzo != null) {
+                            List<Biglietto> bigliettiVidimati = adminService.getBigliettiVidimatiPerMezzo(mezzo);
+                            bigliettiVidimati.forEach(System.out::println);
+                        } else {
+                            System.out.println("Mezzo non trovato.");
+                        }
+                        break;
+
+                    case "4":
+                        System.out.print("Inserisci ID tratta: ");
+                        Long trattaId = Long.parseLong(scanner.nextLine());
+                        Tratta tratta = em.find(Tratta.class, trattaId);
+                        if (tratta != null) {
+                            double tempoMedio = adminService.calcolaTempoMedioTratta(tratta);
+                            System.out.println("Tempo medio di percorrenza: " + tempoMedio + " minuti");
+                        } else {
+                            System.out.println("Tratta non trovata.");
+                        }
+                        break;
+
+                    case "5":
+                        List<Mezzo> inManutenzione = adminService.getMezziInManutenzione();
+                        List<Mezzo> inServizio = adminService.getMezziInServizio();
+                        System.out.println("Mezzi in manutenzione:");
+                        inManutenzione.forEach(System.out::println);
+                        System.out.println("Mezzi in servizio:");
+                        inServizio.forEach(System.out::println);
+                        break;
+
+                    case "6":
+                        List<Tratta> tratte = adminService.getTutteLeTratte();
+                        for (Tratta t : tratte) {
+                            System.out.println("Tratta: " + t);
+                            List<TrattaPercorsa> percorrenze = adminService.getPercorrenzeTratta(t);
+                            percorrenze.forEach(System.out::println);
+                        }
+                        break;
+                }
+            }
         } else {
             System.out.println("MENU UTENTE");
 
@@ -158,10 +240,7 @@ public class Main {
                                 break;
 
                             case "2":
-
                                 Tessera tesseraScelta = utente.getTessere().get(0);
-
-
                                 System.out.println("Scegli tipo abbonamento: 1. Settimanale  2. Mensile");
                                 String tipoInput = scanner.nextLine();
                                 TipoAbbonamento tipoScelto;
@@ -174,8 +253,6 @@ public class Main {
                                     System.out.println("Tipo abbonamento non valido.");
                                     break;
                                 }
-
-
                                 puntoEmissioneService = new PuntoEmissioneService(em);
                                 Abbonamento abbonamento = puntoEmissioneService.emettiAbbonamento(puntoEmissioneScelto, tesseraScelta, tipoScelto);
                                 System.out.println("Abbonamento emesso con successo! ID: " + abbonamento.getId());

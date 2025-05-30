@@ -23,70 +23,48 @@ public class Abbonamento {
     @JoinColumn(name = "tessera_id")
     private Tessera tessera;
 
-    public Abbonamento(int id, LocalDate dataInizio, LocalDate dataFine, TipoAbbonamento tipoAbbonamento, Tessera tessera) {
+    @ManyToOne
+    @JoinColumn(name = "punto_emissione_id")
+    private PuntoEmissione puntoEmissione;
+
+    public Abbonamento() {}
+
+    public Abbonamento(int id, LocalDate dataInizio, LocalDate dataFine, TipoAbbonamento tipoAbbonamento, Tessera tessera, PuntoEmissione puntoEmissione) {
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
         this.tipoAbbonamento = tipoAbbonamento;
         this.tessera = tessera;
+        this.puntoEmissione = puntoEmissione;
     }
 
-    public Abbonamento(int id) {
-        this.id = id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public Abbonamento() {
+    public LocalDate getDataInizio() { return dataInizio; }
+    public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
 
-    }
+    public LocalDate getDataFine() { return dataFine; }
+    public void setDataFine(LocalDate dataFine) { this.dataFine = dataFine; }
 
-    public int getId() {
-        return id;
-    }
+    public TipoAbbonamento getTipoAbbonamento() { return tipoAbbonamento; }
+    public void setTipoAbbonamento(TipoAbbonamento tipoAbbonamento) { this.tipoAbbonamento = tipoAbbonamento; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Tessera getTessera() { return tessera; }
+    public void setTessera(Tessera tessera) { this.tessera = tessera; }
 
-    public LocalDate getDataInizio() {
-        return dataInizio;
-    }
-
-    public void setDataInizio(LocalDate dataInizio) {
-        this.dataInizio = dataInizio;
-    }
-
-    public LocalDate getDataFine() {
-        return dataFine;
-    }
-
-    public void setDataFine(LocalDate dataFine) {
-        this.dataFine = dataFine;
-    }
-
-    public TipoAbbonamento getTipoAbbonamento() {
-        return tipoAbbonamento;
-    }
-
-    public void setTipoAbbonamento(TipoAbbonamento tipoAbbonamento) {
-        this.tipoAbbonamento = tipoAbbonamento;
-    }
-
-    public Tessera getTessera() {
-        return tessera;
-    }
-
-    public void setTessera(Tessera tessera) {
-        this.tessera = tessera;
-    }
+    public PuntoEmissione getPuntoEmissione() { return puntoEmissione; }
+    public void setPuntoEmissione(PuntoEmissione puntoEmissione) { this.puntoEmissione = puntoEmissione; }
 
     @Override
     public String toString() {
-        return "Abbonamneto{" +
+        return "Abbonamento{" +
                 "id=" + id +
                 ", dataInizio=" + dataInizio +
                 ", dataFine=" + dataFine +
-                ", tipo='" + tipoAbbonamento + '\'' +
+                ", tipoAbbonamento=" + tipoAbbonamento +
                 ", tessera=" + tessera +
+                ", puntoEmissione=" + (puntoEmissione != null ? puntoEmissione.getNome() : "null") +
                 '}';
     }
 }
