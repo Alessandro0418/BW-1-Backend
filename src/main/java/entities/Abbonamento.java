@@ -56,6 +56,12 @@ public class Abbonamento {
     public PuntoEmissione getPuntoEmissione() { return puntoEmissione; }
     public void setPuntoEmissione(PuntoEmissione puntoEmissione) { this.puntoEmissione = puntoEmissione; }
 
+    public boolean isValido() {
+        LocalDate oggi = LocalDate.now();
+        return (dataInizio != null && dataFine != null) &&
+                (!oggi.isBefore(dataInizio) && !oggi.isAfter(dataFine));
+    }
+
     @Override
     public String toString() {
         return "Abbonamento{" +
