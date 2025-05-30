@@ -4,6 +4,8 @@ import entities.Tessera;
 import entities.Utente;
 import jakarta.persistence.EntityManager;
 
+import java.time.LocalDate;
+
 public class TesseraDao {
     private EntityManager em;
     public TesseraDao (EntityManager em){this.em = em;}
@@ -33,5 +35,20 @@ public class TesseraDao {
         return em.createQuery("SELECT t FROM Tessera t WHERE t.utente = :utente", Tessera.class)
                 .setParameter("utente", utente)
                 .getSingleResult();
+    }
+
+    public void rinnovaTessera(Tessera tessera) {
+        LocalDate oggi = LocalDate.now();
+        LocalDate scadenzaAttuale = tessera.getDataScadenza();
+
+        // Se scaduta, rinnova da oggi. Altrimenti prolunga da data esistente.
+        LocalDate nuovaScadenza = scadenzaAttuale.isBefore(oggi)
+                ? oggi.plusYears(1)
+                : scadenzaAttuale.plusYears(1);
+
+        tessera.setDataScadenza(nuovaScadenza);
+        em.getTransaction().begin();
+        em.merge(tessera);
+        em.getTransaction().commit();
     }
 }

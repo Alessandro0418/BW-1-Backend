@@ -88,6 +88,13 @@ public class Tessera {
         this.abbonamenti = abbonamenti;
     }
 
+    public void rinnova() {
+        LocalDate oggi = LocalDate.now();
+        this.dataRilascio = oggi;
+        this.dataScadenza = oggi.plusYears(1);
+        System.out.println("Tessera rinnovata. Nuova scadenza: " + dataScadenza);
+    }
+
     @Override
     public String toString() {
         return "Tessera{" +

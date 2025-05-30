@@ -59,9 +59,10 @@ public class PuntoEmissioneService {
     public void inizializzaPuntiEmissione() {
         if (findAll().isEmpty()) {
 
+
             DistributoreAutomatico d = new DistributoreAutomatico();
             d.setNome("Distributore Centrale");
-            // imposta servizio true se serve
+
 
 
             RivenditoreAutorizzato r = new RivenditoreAutorizzato();
